@@ -1,4 +1,4 @@
-from main import Direction
+from Game import Direction
 
 
 class Wolf:
@@ -19,3 +19,8 @@ class Wolf:
                 self.y -= self.wolf_move_dist
             case Direction.WEST:
                 self.x -= self.wolf_move_dist
+
+    def eat(self, sheep):
+        self.x = sheep.x
+        self.y = sheep.y
+        sheep = None

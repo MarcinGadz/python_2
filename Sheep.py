@@ -1,17 +1,19 @@
 import random
 
-from main import Direction
+from Game import Direction
 
 
 class Sheep:
     x = 0.0
     y = 0.0
+    number = 0
     move_dist = 0.0
 
     # Constructor
-    def __init__(self, move_dist, init_pos_limit):
+    def __init__(self, move_dist, init_pos_limit, number):
         self.move_dist = move_dist
         self.generate_init_pos(init_pos_limit)
+        self.number = number
 
     def generate_init_pos(self, init_pos_limit):
         self.x = random.uniform(-init_pos_limit, init_pos_limit)
