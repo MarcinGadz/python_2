@@ -1,5 +1,7 @@
 import csv
+import json
 import math
+
 
 # from Sheep import Sheep
 from Direction import Direction
@@ -14,82 +16,113 @@ from Wolf import Wolf
 # 3. jest funkcja do pobrania tych danych, wystarczy zapisac do jsona
 # 4. gotowe
 
+# WYMAGANIA NA 4:
+# 1. zrobione :)
+# 2. argumenty wywołania (argparse) - not done
+# 3. plik konfiguracyjny (configparser) -not done
+# 4. logowanie do chase.log (logging from std) - josh dun
 
-def play():
-    # constraints
-    sheep_list = []
-    rounds = 50
-    no_of_sheep = 15
-    sheep_move_dist = 0.5
-    wolf_move_dist = 1.0
-    sheep_init_pos = 10
+# WYMAGANIA NA 5:
+# 1. nie zrobione :(
+# 2. distutils from std / setuptools - idk o co chodzi
+# 3. tez idk
 
-    # initialization
-    wolf = Wolf(wolf_move_dist)
-    for i in range(no_of_sheep):
-        s = Sheep(sheep_move_dist, sheep_init_pos, i)
-        sheep_list.append(s)
+class Game:
+    def __init__(self,
+                 rounds, sheeps, sheep_move_dist, wolf_move_dist, init_pos_limit,
+                 wait, directory):
+        # params
+        self.rounds = rounds
+        self.no_of_sheep = sheeps
+        self.sheep_move_dist = sheep_move_dist
+        self.wolf_move_dist = wolf_move_dist
+        self.init_pos_limit = init_pos_limit
 
-    with open("alive.csv", "w", newline='') as file:
-        writer = csv.writer(file)
-        for i in range(rounds):
+        self.wait = wait
+        self.directory = directory
+
+        # wolf and sheeps
+        self.wolf = Wolf(self.wolf_move_dist)
+        self.sheep_list = []
+        for i in range(self.no_of_sheep):
+            self.sheep_list.append(
+                Sheep(self.sheep_move_dist, self.init_pos_limit, i)
+            )
+
+    def play(self):
+        csv_data = []
+        json_data = []
+        for i in range(self.rounds):
             eaten = None
-            writer.writerow([i, len(sheep_list)])
-            if not sheep_list:
+            if not self.sheep_list:
                 return
-            for sheep in sheep_list:
+            for sheep in self.sheep_list:
                 sheep.move()
             chased = False
-            (nearest, dist) = get_nearest_sheep(wolf, sheep_list)
-            if dist < wolf_move_dist:
-                sheep_list.remove(nearest)
-                wolf.eat(nearest)
+            (nearest, dist) = self.get_nearest_sheep()
+            if dist < self.wolf_move_dist:
+                self.sheep_list.remove(nearest)
+                self.wolf.eat(nearest)
                 eaten = nearest
             else:
                 # TODO: refactor move to accept vector as directin and move wolf in direction to nearest sheep
-                wolf.move(calc_direction(wolf, nearest))
+                self.wolf.move(self.calc_direction(nearest))
                 chased = True
-            res = {"round": i, "wolf_pos": (wolf.x, wolf.y), "sheeps": len(sheep_list),
-                   "chased_sheep": nearest.number if chased else "None",
-                   "eaten_sheep": eaten.number if eaten else "None"}
-            print(res)
+            json_data.append(self.get_pos_data(i))
+            csv_data.append([i, len(self.sheep_list)])
+            self.print_round(i, nearest.number, chased, eaten)
+        self.saveData(csv_data, json_data)
 
-
-def calc_direction(wolf, sheep):
-    diff_x = wolf.x - sheep.x
-    diff_y = wolf.y - sheep.y
-    dir = Direction.NORTH
-    if math.fabs(diff_x) > math.fabs(diff_y):
-        if diff_x > 0:
-            dir = Direction.WEST
+    def calc_direction(self, sheep):
+        diff_x = self.wolf.x - sheep.x
+        diff_y = self.wolf.y - sheep.y
+        if math.fabs(diff_x) > math.fabs(diff_y):
+            if diff_x > 0:
+                direction = Direction.WEST
+            else:
+                direction = Direction.EAST
         else:
-            dir = Direction.EAST
-    else:
-        if diff_y > 0:
-            dir = Direction.SOUTH
-        else:
-            dir = Direction.NORTH
-    return dir
+            if diff_y > 0:
+                direction = Direction.SOUTH
+            else:
+                direction = Direction.NORTH
+        return direction
 
+    def get_pos_data(self, roundNumber):
+        sheep_pos = []
+        # TODO check if it is possible to do it better
+        for s in self.sheep_list:
+            sheep_pos.append([s.x, s.y])
+        return {"round_no": roundNumber, "wolf_pos": (self.wolf.x, self.wolf.y), "sheep_pos": sheep_pos}
 
-def get_data(round, wolf, sheep):
-    sheep_pos = []
-    # TODO check if it is possible to do it better
-    for s in sheep:
-        sheep_pos.append([s.x, s.y])
-    res = {"round_no": round, "wolf_pos": (wolf.x, wolf.y), "sheep_pos": sheep_pos}
-    return res
+    def calc_distance(self, sheep):
+        return math.sqrt((sheep.x - self.wolf.x) ** 2 + (sheep.y - self.wolf.y) ** 2)
 
+    def get_nearest_sheep(self):
+        # returns tuple made from nearest sheep and its distance from wolf
+        res = (
+            self.sheep_list[0],
+            self.calc_distance(self.sheep_list[0])
+        )
+        for sheep in self.sheep_list:
+            dist = self.calc_distance(sheep)
+            if dist < res[1]:
+                res = (sheep, dist)
+        return res
 
-def calc_distance(sheep, wolf):
-    return math.sqrt((sheep.x - wolf.x) ** 2 + (sheep.y - wolf.y) ** 2)
+    def print_round(self, roundNumber, chased_sheep, chased, eaten):
+        print({
+                "round": roundNumber,
+                "wolf_pos": (self.wolf.x, self.wolf.y),
+                "sheeps": len(self.sheep_list),
+                "chased_sheep": chased_sheep if chased else "None",
+                "eaten_sheep": eaten.number if eaten else "None"
+            })
 
+    def saveData(self, csv_data, json_data):
+        with open(self.directory + "alive.csv", "w", newline='') as csv_file:
+            writer = csv.writer(csv_file)
+            writer.writerows(csv_data)
 
-def get_nearest_sheep(wolf, sheep_list):
-    # returns tuple made from nearest sheep and its distance from wolf
-    res = (sheep_list[0], calc_distance(sheep_list[0], wolf))
-    for sheep in sheep_list:
-        dist = calc_distance(sheep, wolf)
-        if dist < res[1]:
-            res = (sheep, dist)
-    return res
+        with open(self.directory + "pos.json", 'w') as json_file:
+            json.dump(json_data, json_file, indent=3)
