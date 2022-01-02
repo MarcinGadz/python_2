@@ -1,5 +1,6 @@
 import argparse
 import configparser
+import logging
 import sys
 
 from Game import *
@@ -34,9 +35,15 @@ if __name__ == '__main__':
     args = parser.parse_args()
     print("Args: ", args)
 
+    if args.log:
+        level = logging.getLevelName(args.log)
+        logging.basicConfig(level=level, filename='chase.log', filemode='w', force=True,
+                            format='%(asctime)s [%(filename)12s:%(lineno)3s - %(funcName)20s()]: %(levelname)s: %(message)s')
+
     try:
         game = Game(args.rounds, args.sheep, args.wait, args.dir, args.config)
     except ConfigError as e:
+        logging.error("Exception has been caught: " + str(e))
         sys.exit(e)
 
     game.play()

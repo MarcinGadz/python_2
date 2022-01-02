@@ -2,6 +2,7 @@ import csv
 import json
 import math
 import configparser
+import logging
 
 from pathlib import Path
 
@@ -26,19 +27,18 @@ class ConfigError(Exception):
 # 2. argumenty wywołania (argparse) - not done
 #       dir - done
 #       wait - done
-#       log - half done
-#       config - not done
+#       log - done
+#       config - done
 #       game_params - done
-# 3. plik konfiguracyjny (configparser) -not done
-# 4. logowanie do chase.log (logging from std) - josh dun
+# 3. plik konfiguracyjny (configparser) - done
+# 4. logowanie do chase.log (logging from std) - dun
 
-# WYMAGANIA NA 5:
-# 1. nie zrobione :(
-# 2. distutils from std / setuptools - idk o co chodzi
-# 3. tez idk
 
 class Game:
     def __init__(self, rounds, sheep, wait, directory, config_file):
+        logging.debug(
+            f"Game has been initialized with args: "
+            f"rounds: {rounds}, sheep: {sheep}, wait: {wait}, directory: {directory}, config_file: {config_file}")
         # params
         self.rounds = rounds
         self.no_of_sheep = sheep
@@ -60,6 +60,7 @@ class Game:
             )
 
     def read_config_file(self, config_file):
+        logging.debug(f"executed with args: config_file: {config_file}")
         config = configparser.ConfigParser()
         config.read(config_file)
 
@@ -80,9 +81,11 @@ class Game:
             raise ConfigError('Invalid data in config file: ' + str(e))
 
     def play(self):
+        logging.debug("executed")
         csv_data = []
         json_data = []
         for i in range(self.rounds):
+            logging.info(f"round {i} has started")
             eaten = None
             if not self.sheep_list:
                 return
@@ -107,6 +110,7 @@ class Game:
         self.saveData(csv_data, json_data)
 
     def calc_direction(self, sheep):
+        logging.debug(f"executed with args: sheep: {sheep.number}")
         diff_x = self.wolf.x - sheep.x
         diff_y = self.wolf.y - sheep.y
         if math.fabs(diff_x) > math.fabs(diff_y):
@@ -119,20 +123,29 @@ class Game:
                 direction = Direction.SOUTH
             else:
                 direction = Direction.NORTH
+        logging.debug(f"returned value direction: {direction}")
         return direction
 
-    def get_pos_data(self, roundNumber):
+    def get_pos_data(self, round_number):
+        logging.debug(f"executed with args: round_number: {round_number}")
         sheep_pos = []
         # TODO check if it is possible to do it better
         for s in self.sheep_list:
             sheep_pos.append([s.x, s.y])
-        return {"round_no": roundNumber, "wolf_pos": (self.wolf.x, self.wolf.y), "sheep_pos": sheep_pos}
+
+        pos_data = {"round_no": round_number, "wolf_pos": (self.wolf.x, self.wolf.y), "sheep_pos": sheep_pos}
+        logging.debug(f"returned value pos_data: {pos_data}")
+        return pos_data
 
     def calc_distance(self, sheep):
-        return math.sqrt((sheep.x - self.wolf.x) ** 2 + (sheep.y - self.wolf.y) ** 2)
+        logging.debug(f"executed with args: sheep: {sheep.number}")
+        dist = math.sqrt((sheep.x - self.wolf.x) ** 2 + (sheep.y - self.wolf.y) ** 2)
+        logging.debug(f"returned value dist: {dist}")
+        return dist
 
     def get_nearest_sheep(self):
         # returns tuple made from the nearest sheep and its distance from wolf
+        logging.debug("executed")
         res = (
             self.sheep_list[0],
             self.calc_distance(self.sheep_list[0])
@@ -141,11 +154,15 @@ class Game:
             dist = self.calc_distance(sheep)
             if dist < res[1]:
                 res = (sheep, dist)
+        logging.debug(f"returned tuple res: {res}")
         return res
 
-    def print_round(self, roundNumber, chased_sheep, chased, eaten):
+    def print_round(self, round_number, chased_sheep, chased, eaten):
+        logging.debug(f"executed with args: "
+                      f"round_number: {round_number}, chased_sheep: {chased_sheep}, "
+                      f"chased: {chased}, eaten: {eaten.number if eaten else None}")
         print({
-                "round": roundNumber,
+                "round": round_number,
                 "wolf_pos": (self.wolf.x, self.wolf.y),
                 "sheep": len(self.sheep_list),
                 "chased_sheep": chased_sheep if chased else "None",
@@ -153,6 +170,7 @@ class Game:
             })
 
     def saveData(self, csv_data, json_data):
+        logging.debug(f"executed with args: csv_data: {csv_data}, json_data: {json_data}")
         Path(self.directory).mkdir(parents=True, exist_ok=True)
 
         with open(self.directory + "alive.csv", "w", newline='') as csv_file:
