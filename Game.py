@@ -107,7 +107,7 @@ class Game:
 
             if self.wait:
                 input("Press Enter to go to the next round...")
-        self.saveData(csv_data, json_data)
+        self.save_data(csv_data, json_data)
 
     def calc_direction(self, sheep):
         logging.debug(f"executed with args: sheep: {sheep.number}")
@@ -169,7 +169,7 @@ class Game:
                 "eaten_sheep": eaten.number if eaten else "None"
             })
 
-    def saveData(self, csv_data, json_data):
+    def save_data(self, csv_data, json_data):
         logging.debug(f"executed with args: csv_data: {csv_data}, json_data: {json_data}")
         Path(self.directory).mkdir(parents=True, exist_ok=True)
 
