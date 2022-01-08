@@ -1,9 +1,7 @@
 import argparse
-import configparser
-import logging
 import sys
 
-from Game import *
+from .Game import *
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Wolf and sheep simulator')

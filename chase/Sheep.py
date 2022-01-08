@@ -1,8 +1,7 @@
-import logging
 import random
 import logging
 
-from Game import Direction
+from .Game import Direction
 
 
 class Sheep:

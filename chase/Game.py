@@ -7,9 +7,9 @@ import logging
 from pathlib import Path
 
 # from Sheep import Sheep
-from Direction import Direction
-from Sheep import Sheep
-from Wolf import Wolf
+from .Direction import Direction
+from .Sheep import Sheep
+from .Wolf import Wolf
 
 
 class ConfigError(Exception):

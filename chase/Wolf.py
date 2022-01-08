@@ -1,5 +1,5 @@
 import logging
-from Game import Direction
+from .Game import Direction
 
 
 class Wolf:
