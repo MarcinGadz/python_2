@@ -11,7 +11,6 @@ class Sheep:
     move_dist = 0.0
     lives = True
 
-    # Constructor
     def __init__(self, move_dist, init_pos_limit, number):
         logging.debug(f"Sheep has been initialized with args: "
                       f"move_dist: {move_dist}, "

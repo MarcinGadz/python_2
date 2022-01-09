@@ -21,7 +21,6 @@ class Game:
             f"Game has been initialized with args: "
             f"rounds: {rounds}, sheep: {sheep}, wait: {wait}, "
             f"directory: {directory}, config_file: {config_file}")
-        # params
         self.rounds = rounds
         self.no_of_sheep = sheep
         self.sheep_move_dist = 0.5
@@ -156,14 +155,14 @@ class Game:
                       f"chased: {chased}, "
                       f"eaten: {eaten.number if eaten else None}")
         print({
-                "round": round_number,
-                "wolf_pos": (
-                    "{:.3f}".format(self.wolf.x),
-                    "{:.3f}".format(self.wolf.y)),
-                "sheep": len(alive_sheep_list),
-                "chased_sheep": chased_sheep if chased else "None",
-                "eaten_sheep": eaten.number if eaten else "None"
-            })
+            "round": round_number,
+            "wolf_pos": (
+                "{:.3f}".format(self.wolf.x),
+                "{:.3f}".format(self.wolf.y)),
+            "sheep": len(alive_sheep_list),
+            "chased_sheep": chased_sheep if chased else "None",
+            "eaten_sheep": eaten.number if eaten else "None"
+        })
 
     def save_data(self, csv_data, json_data):
         logging.debug(f"executed with args: "
