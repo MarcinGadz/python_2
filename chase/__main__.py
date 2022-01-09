@@ -1,7 +1,7 @@
 import argparse
 import sys
 
-from .Game import *
+from chase.Game import *
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Wolf and sheep simulator')

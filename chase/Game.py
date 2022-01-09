@@ -7,9 +7,9 @@ import logging
 from pathlib import Path
 
 # from Sheep import Sheep
-from .Direction import Direction
-from .Sheep import Sheep
-from .Wolf import Wolf
+from chase.Direction import Direction
+from chase.Sheep import Sheep
+from chase.Wolf import Wolf
 
 
 class ConfigError(Exception):
@@ -70,22 +70,25 @@ class Game:
         for i in range(self.rounds):
             logging.info(f"round {i} has started")
             eaten = None
-            if not self.sheep_list:
-                return
+            alive_sheep_list = []
             for sheep in self.sheep_list:
-                sheep.move()
+                if sheep.lives:
+                    sheep.move()
+                    alive_sheep_list.append(sheep)
+            if not alive_sheep_list:
+                return
             chased = False
-            (nearest, dist) = self.get_nearest_sheep()
+            (nearest, dist) = self.get_nearest_sheep(alive_sheep_list)
             if dist < self.wolf_move_dist:
-                self.sheep_list.remove(nearest)
+                alive_sheep_list.remove(nearest)
                 self.wolf.eat(nearest)
                 eaten = nearest
             else:
                 self.wolf.move(nearest)
                 chased = True
             json_data.append(self.get_pos_data(i))
-            csv_data.append([i, len(self.sheep_list)])
-            self.print_round(i, nearest.number, chased, eaten)
+            csv_data.append([i, len(alive_sheep_list)])
+            self.print_round(i, nearest.number, chased, eaten, alive_sheep_list)
 
             if self.wait:
                 input("Press Enter to go to the next round...")
@@ -113,7 +116,10 @@ class Game:
         sheep_pos = []
         # TODO check if it is possible to do it better
         for s in self.sheep_list:
-            sheep_pos.append([s.x, s.y])
+            if s.lives:
+                sheep_pos.append([s.x, s.y])
+            else:
+                sheep_pos.append(None)
 
         pos_data = {"round_no": round_number,
                     "wolf_pos": (self.wolf.x, self.wolf.y),
@@ -129,21 +135,21 @@ class Game:
         logging.debug(f"returned value dist: {dist}")
         return dist
 
-    def get_nearest_sheep(self):
+    def get_nearest_sheep(self, alive_sheep_list):
         # returns tuple made from the nearest sheep and its distance from wolf
         logging.debug("executed")
         res = (
-            self.sheep_list[0],
-            self.calc_distance(self.sheep_list[0])
+            alive_sheep_list[0],
+            self.calc_distance(alive_sheep_list[0])
         )
-        for sheep in self.sheep_list:
+        for sheep in alive_sheep_list:
             dist = self.calc_distance(sheep)
             if dist < res[1]:
                 res = (sheep, dist)
         logging.debug(f"returned tuple res: {res}")
         return res
 
-    def print_round(self, round_number, chased_sheep, chased, eaten):
+    def print_round(self, round_number, chased_sheep, chased, eaten, alive_sheep_list):
         logging.debug(f"executed with args: "
                       f"round_number: {round_number}, "
                       f"chased_sheep: {chased_sheep}, "
@@ -154,7 +160,7 @@ class Game:
                 "wolf_pos": (
                     "{:.3f}".format(self.wolf.x),
                     "{:.3f}".format(self.wolf.y)),
-                "sheep": len(self.sheep_list),
+                "sheep": len(alive_sheep_list),
                 "chased_sheep": chased_sheep if chased else "None",
                 "eaten_sheep": eaten.number if eaten else "None"
             })

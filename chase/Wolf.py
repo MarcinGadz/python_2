@@ -28,6 +28,6 @@ class Wolf:
         logging.debug(f"executed with args: sheep: {sheep.number}")
         self.x = sheep.x
         self.y = sheep.y
+        sheep.lives = False
         logging.info(f"sheep {sheep.number} has been eaten. "
                      f"New wolf position: [{self.x}, {self.y}]")
-        sheep = None

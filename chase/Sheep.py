@@ -1,7 +1,7 @@
 import random
 import logging
 
-from .Game import Direction
+from chase.Game import Direction
 
 
 class Sheep:
@@ -17,6 +17,7 @@ class Sheep:
         self.move_dist = move_dist
         self.generate_init_pos(init_pos_limit)
         self.number = number
+        self.lives = True
 
     def generate_init_pos(self, init_pos_limit):
         logging.debug(f"executed with args: init_pos_limit: {init_pos_limit}")
