@@ -9,6 +9,7 @@ class Sheep:
     y = 0.0
     number = 0
     move_dist = 0.0
+    lives = True
 
     # Constructor
     def __init__(self, move_dist, init_pos_limit, number):
@@ -19,7 +20,6 @@ class Sheep:
         self.move_dist = move_dist
         self.generate_init_pos(init_pos_limit)
         self.number = number
-        self.lives = True
 
     def generate_init_pos(self, init_pos_limit):
         logging.debug(f"executed with args: init_pos_limit: {init_pos_limit}")
