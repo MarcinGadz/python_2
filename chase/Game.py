@@ -6,7 +6,6 @@ import logging
 
 from pathlib import Path
 
-# from Sheep import Sheep
 from chase.Direction import Direction
 from chase.Sheep import Sheep
 from chase.Wolf import Wolf
@@ -88,7 +87,8 @@ class Game:
                 chased = True
             json_data.append(self.get_pos_data(i))
             csv_data.append([i, len(alive_sheep_list)])
-            self.print_round(i, nearest.number, chased, eaten, alive_sheep_list)
+            self.print_round(i, nearest.number,
+                             chased, eaten, alive_sheep_list)
 
             if self.wait:
                 input("Press Enter to go to the next round...")
@@ -114,7 +114,6 @@ class Game:
     def get_pos_data(self, round_number):
         logging.debug(f"executed with args: round_number: {round_number}")
         sheep_pos = []
-        # TODO check if it is possible to do it better
         for s in self.sheep_list:
             if s.lives:
                 sheep_pos.append([s.x, s.y])
@@ -149,7 +148,8 @@ class Game:
         logging.debug(f"returned tuple res: {res}")
         return res
 
-    def print_round(self, round_number, chased_sheep, chased, eaten, alive_sheep_list):
+    def print_round(self, round_number, chased_sheep,
+                    chased, eaten, alive_sheep_list):
         logging.debug(f"executed with args: "
                       f"round_number: {round_number}, "
                       f"chased_sheep: {chased_sheep}, "

@@ -13,7 +13,9 @@ class Sheep:
     # Constructor
     def __init__(self, move_dist, init_pos_limit, number):
         logging.debug(f"Sheep has been initialized with args: "
-                      f"move_dist: {move_dist}, init_pos_limit: {init_pos_limit}, number: {number}")
+                      f"move_dist: {move_dist}, "
+                      f"init_pos_limit: {init_pos_limit}, "
+                      f"number: {number}")
         self.move_dist = move_dist
         self.generate_init_pos(init_pos_limit)
         self.number = number
@@ -38,4 +40,5 @@ class Sheep:
                 self.y -= self.move_dist
             case Direction.WEST:
                 self.x -= self.move_dist
-        logging.info(f"sheep moved from [{old_x}, {old_y}] to [{self.x}, {self.y}]")
+        logging.info(f"sheep moved from [{old_x}, {old_y}] "
+                     f"to [{self.x}, {self.y}]")
