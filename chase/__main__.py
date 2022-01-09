@@ -32,7 +32,6 @@ if __name__ == '__main__':
                         default=False)
 
     args = parser.parse_args()
-    print("Args: ", args)
 
     if args.log:
         level = logging.getLevelName(args.log)
@@ -41,8 +40,13 @@ if __name__ == '__main__':
                                    '%(levelname)s: %(message)s')
 
     try:
+        if args.rounds <= 0:
+            raise ValueError("Rounds number must be greater than 0")
+        if args.sheep <= 0:
+            raise ValueError("Sheep number must be greater than 0")
+
         game = Game(args.rounds, args.sheep, args.wait, args.dir, args.config)
-    except ConfigError as e:
+    except (ConfigError, ValueError) as e:
         logging.error("Exception has been caught: " + str(e))
         sys.exit(e)
 
