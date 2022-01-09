@@ -5,16 +5,17 @@ from .Game import *
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Wolf and sheep simulator')
-    parser.add_argument('--config',
-                        help='Config file with input data')
+    parser.add_argument('-c', '--config',
+                        help="Config file with input data",
+                        metavar='FILE')
     parser.add_argument('-d', '--dir',
-                        help='Allows to save data to specified directory. Default: current folder',
+                        help="Allows to save data to specified directory. Default: current folder",
                         default="./",
                         metavar="DIR")
     parser.add_argument('-l', '--log',
                         help='Allows to log events to specified file',
                         choices=['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'],
-                        metavar="LEVEL")
+                        metavar='LEVEL')
     parser.add_argument('-r', '--rounds',
                         help='Number of rounds of the game. Default: 50',
                         type=int,
