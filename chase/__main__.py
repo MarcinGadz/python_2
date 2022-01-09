@@ -54,5 +54,4 @@ if __name__ == '__main__':
     except (ConfigError, ValueError) as e:
         logging.error('Exception has been caught: ' + str(e))
         sys.exit(e)
-
     game.play()
