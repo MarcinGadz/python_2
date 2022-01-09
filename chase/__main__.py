@@ -36,7 +36,8 @@ if __name__ == '__main__':
     if args.log:
         level = logging.getLevelName(args.log)
         logging.basicConfig(level=level, filename='chase.log', filemode='w', force=True,
-                            format='%(asctime)s [%(filename)12s:%(lineno)3s - %(funcName)20s()]: %(levelname)s: %(message)s')
+                            format='%(asctime)s [%(filename)12s:%(lineno)3s - %(funcName)20s()]: '
+                                   '%(levelname)s: %(message)s')
 
     try:
         game = Game(args.rounds, args.sheep, args.wait, args.dir, args.config)

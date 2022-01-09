@@ -1,5 +1,5 @@
 import logging
-from .Game import Direction
+import math
 
 
 class Wolf:
@@ -11,19 +11,18 @@ class Wolf:
         logging.debug(f"Wolf has been initialized with args: wolf_move_dist: {wolf_move_dist}")
         self.wolf_move_dist = wolf_move_dist
 
-    def move(self, direction):
-        logging.debug(f"executed with args: direction: {direction}")
+    def move(self, nearest_sheep):
+        logging.debug(f"executed with args: nearest_sheep: {nearest_sheep.number}")
         (old_x, old_y) = (self.x, self.y)
-        match direction:
-            case Direction.NORTH:
-                self.y += self.wolf_move_dist
-            case Direction.EAST:
-                self.x += self.wolf_move_dist
-            case Direction.SOUTH:
-                self.y -= self.wolf_move_dist
-            case Direction.WEST:
-                self.x -= self.wolf_move_dist
-        logging.info(f"wolf moved from [{old_x}, {old_y}] to [{self.x}, {self.y}]")
+
+        dist = math.sqrt((nearest_sheep.x - self.x) ** 2 + (nearest_sheep.y - self.y) ** 2)
+        dx = (nearest_sheep.x - self.x) / dist
+        dy = (nearest_sheep.y - self.y) / dist
+
+        self.x += dx
+        self.y += dy
+
+        logging.info(f"wolf moved from [{old_x}, {old_y}] to [{self.x}, {self.y}] - vector is [{dx}; {dy}]")
 
     def eat(self, sheep):
         logging.debug(f"executed with args: sheep: {sheep.number}")
