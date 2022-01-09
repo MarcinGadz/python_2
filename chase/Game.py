@@ -74,7 +74,8 @@ class Game:
                     sheep.move()
                     alive_sheep_list.append(sheep)
             if not alive_sheep_list:
-                return
+                logging.info("wolf has eaten all sheep")
+                break
             chased = False
             (nearest, dist) = self.get_nearest_sheep(alive_sheep_list)
             if dist < self.wolf_move_dist:
@@ -91,6 +92,7 @@ class Game:
 
             if self.wait:
                 input("Press Enter to go to the next round...")
+        logging.info("The game has ended")
         self.save_data(csv_data, json_data)
 
     def calc_direction(self, sheep):
